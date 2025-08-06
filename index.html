@@ -1,97 +1,190 @@
-// OPEN-GATE APP - Full Combined Code
-// Tech: React + React Router + Tailwind CSS
+// ===================================================================================
+// OPEN-GATE E-COMMERCE PLATFORM - FULL COMBINED APPLICATION CODE
+//
+// Technology Stack:
+// - React (v18+)
+// - React Router DOM (v6+) for routing
+// - Tailwind CSS for styling
+//
+// Structure of this file:
+// 1. Imports & Setup
+// 2. Asset & Data Definitions (Mock API data for products, blog, FAQ, etc.)
+// 3. Reusable UI & Layout Components (Navbar, Footer, Form Fields, Cards, etc.)
+// 4. Full Page Components (Home, About, Product Details, Auth Pages, Legal, etc.)
+// 5. Main Application Component & Router Configuration
+// ===================================================================================
 
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useParams, useLocation } from 'react-router-dom';
 
-// --- Reusable Layout Components -------------------------------------------
+// ===================================================================================
+// 2. ASSET & DATA DEFINITIONS
+// In a real application, this data would come from a backend API.
+// ===================================================================================
 
+const AppData = {
+  products: [
+    { id: 1, slug: 'handcrafted-wooden-chair', name: 'Handcrafted Wooden Chair', price: 120.00, image: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?w=600&q=80', description: 'A beautifully handcrafted chair made from sustainable oak. Its ergonomic design provides excellent comfort and support, making it a perfect addition to any modern or rustic living space. Each piece is unique.' },
+    { id: 2, slug: 'vintage-leather-jacket', name: 'Vintage Leather Jacket', price: 85.50, image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&q=80', description: 'A timeless vintage leather jacket, carefully restored to preserve its classic look and feel. Features a durable zipper, multiple pockets, and a comfortable inner lining. Perfect for a cool, effortless style.' },
+    { id: 3, slug: 'ceramic-plant-pot', name: 'Ceramic Plant Pot', price: 45.00, image: 'https://images.unsplash.com/photo-1591143222389-985145b051b4?w=600&q=80', description: 'A minimalist ceramic pot with a smooth matte finish and a drainage hole. Ideal for housing your favorite succulents, herbs, or small plants. Adds a touch of green and elegance to your home or office.' },
+    { id: 4, slug: 'abstract-canvas-art', name: 'Abstract Canvas Art', price: 250.00, image: 'https://images.unsplash.com/photo-1506806732259-39c2d0268443?w=600&q=80', description: 'A vibrant and expressive piece of abstract art, hand-painted on high-quality canvas. This stunning artwork will be the focal point of any room, sparking conversation and inspiring creativity.' },
+    { id: 5, slug: 'sustainable-bamboo-cutlery-set', name: 'Sustainable Bamboo Cutlery Set', price: 22.99, image: 'https://images.unsplash.com/photo-1615937513819-3c366a55097f?w=600&q=80', description: 'Eco-friendly and reusable bamboo cutlery set, including a fork, knife, spoon, and chopsticks, all wrapped in a convenient travel pouch. The perfect alternative to single-use plastics.' },
+    { id: 6, slug: 'hand-woven-wool-rug', name: 'Hand-Woven Wool Rug', price: 350.00, image: 'https://images.unsplash.com/photo-1617304389974-d731055535a8?w=600&q=80', description: 'An intricate, hand-woven rug made from 100% natural wool. Its plush texture and traditional patterns bring warmth and character to your floors.' }
+  ],
+  blogPosts: [
+    { slug: '10-tips-for-caring-for-handcrafted-furniture', title: '10 Tips for Caring for Your Handcrafted Furniture', author: 'Jane Doe', date: 'August 5, 2025', summary: 'Learn how to make your unique pieces last a lifetime with these simple care instructions...', content: 'Caring for handcrafted furniture is essential to preserve its beauty and durability. Here are 10 tips: 1. Dust regularly with a soft, lint-free cloth. 2. Avoid direct sunlight... (more content here)' },
+    { slug: 'meet-the-maker-an-interview-with-john-smith', title: 'Meet the Maker: An Interview with John Smith', author: 'Alex Ray', date: 'July 28, 2025', summary: 'We sit down with ceramic artist John Smith to talk about his inspiration and creative process...', content: 'John Smith is a master of ceramics, known for his unique glazing techniques. We asked him about his journey... (more content here)' },
+    { slug: 'the-rise-of-sustainable-goods', title: 'The Rise of Sustainable Goods', author: 'Maria Garcia', date: 'July 15, 2025', summary: 'Why are consumers and creators alike turning towards sustainable products? We explore the trend...', content: 'Sustainability is more than a buzzword; it\'s a movement. From materials to production processes, here\'s what defines a sustainable product... (more content here)' }
+  ],
+  testimonials: [
+    { quote: "I found the most unique vintage jacket on OPEN-GATE! The process was so simple and the quality is outstanding.", author: "Alex Johnson" },
+    { quote: "A fantastic platform for discovering new artisans. The handcrafted chair I bought is now the centerpiece of my living room. Highly recommended!", author: "Maria Garcia" },
+    { quote: "Finally, a marketplace that aligns with my values. The selection of sustainable products is incredible.", author: "Sam Lee" }
+  ],
+  faqData: [
+    { question: 'What is OPEN-GATE?', answer: 'OPEN-GATE is a curated online marketplace dedicated to unique, handcrafted, and sustainable goods from independent creators and small businesses around the world.' },
+    { question: 'How do I place an order?', answer: 'Simply browse our collections, add your desired items to the cart, and proceed to checkout. We offer secure payment options for a smooth and safe transaction.' },
+    { question: 'What is your return policy?', answer: 'We offer a 30-day return policy on most items. Please visit our Terms of Service page for detailed information on eligibility and procedures for returns and refunds.' },
+    { question: 'How can I become a seller on OPEN-GATE?', answer: 'We are always looking for talented creators! Please visit our "Become a Seller" page (coming soon) or contact us directly with information about your products.' }
+  ]
+};
+
+// ===================================================================================
+// 3. REUSABLE UI & LAYOUT COMPONENTS
+// ===================================================================================
+
+// --- ScrollToTop Utility ---
+// Ensures navigation to a new page starts at the top.
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
+// --- Navbar ---
 const Navbar = () => {
   return (
-    <nav className="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-50">
-      <Link to="/" className="text-2xl font-bold text-blue-600">OPEN-GATE</Link>
-      <div className="hidden md:flex space-x-6">
-        <Link to="/" className="text-gray-700 hover:text-blue-600">Home</Link>
-        <Link to="/about" className="text-gray-700 hover:text-blue-600">About Us</Link>
-        <Link to="/blog" className="text-gray-700 hover:text-blue-600">Blog</Link>
-        <Link to="/contact" className="text-gray-700 hover:text-blue-600">Contact</Link>
+    <header className="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-50">
+      <Link to="/" className="text-2xl font-bold text-blue-600 tracking-tight">OPEN-GATE</Link>
+      <nav className="hidden md:flex items-center space-x-6">
+        <Link to="/" className="text-gray-700 hover:text-blue-600 transition-colors">Home</Link>
+        <Link to="/about" className="text-gray-700 hover:text-blue-600 transition-colors">About Us</Link>
+        <Link to="/blog" className="text-gray-700 hover:text-blue-600 transition-colors">Blog</Link>
+        <Link to="/contact" className="text-gray-700 hover:text-blue-600 transition-colors">Contact</Link>
+      </nav>
+      <div className="flex items-center space-x-2 md:space-x-4">
+        <Link to="/login" className="bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-600 transition-colors">Login</Link>
+        <Link to="/register" className="bg-green-500 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-green-600 transition-colors">Register</Link>
       </div>
-      <div className="space-x-4">
-        <Link to="/login" className="bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600 transition-colors">Login</Link>
-        <Link to="/register" className="bg-green-500 text-white px-4 py-2 rounded-xl hover:bg-green-600 transition-colors">Register</Link>
-      </div>
-    </nav>
+    </header>
   );
 };
 
+// --- Footer ---
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white p-10 mt-auto">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="bg-gray-800 text-white pt-10 pb-6 mt-auto">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-8">
         <div>
-          <h3 className="font-bold text-lg mb-2">OPEN-GATE</h3>
-          <p className="text-gray-400">Your one-stop platform for unique finds and great opportunities.</p>
+          <h3 className="font-bold text-xl mb-3">OPEN-GATE</h3>
+          <p className="text-gray-400 text-sm">Your one-stop platform for unique finds and great opportunities. Connecting creators with a conscious community.</p>
         </div>
         <div>
-          <h3 className="font-bold text-lg mb-2">Quick Links</h3>
-          <ul>
+          <h3 className="font-bold text-lg mb-3">Quick Links</h3>
+          <ul className="space-y-2 text-sm">
             <li><Link to="/about" className="text-gray-400 hover:text-white hover:underline">About Us</Link></li>
             <li><Link to="/contact" className="text-gray-400 hover:text-white hover:underline">Contact</Link></li>
+            <li><Link to="/blog" className="text-gray-400 hover:text-white hover:underline">Blog</Link></li>
             <li><Link to="/faq" className="text-gray-400 hover:text-white hover:underline">FAQ</Link></li>
           </ul>
         </div>
         <div>
-          <h3 className="font-bold text-lg mb-2">Legal</h3>
-          <ul>
+          <h3 className="font-bold text-lg mb-3">Legal</h3>
+          <ul className="space-y-2 text-sm">
             <li><Link to="/privacy-policy" className="text-gray-400 hover:text-white hover:underline">Privacy Policy</Link></li>
             <li><Link to="/terms-of-service" className="text-gray-400 hover:text-white hover:underline">Terms of Service</Link></li>
           </ul>
         </div>
         <div>
-          <h3 className="font-bold text-lg mb-2">Follow Us</h3>
+          <h3 className="font-bold text-lg mb-3">Follow Us</h3>
           <div className="flex space-x-4">
-             {/* In a real app, these would be icons */}
-            <a href="#" className="text-gray-400 hover:text-white">Twitter</a>
-            <a href="#" className="text-gray-400 hover:text-white">Facebook</a>
-            <a href="#" className="text-gray-400 hover:text-white">Instagram</a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Twitter">
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616v.065c0 2.399 1.705 4.384 3.966 4.84-.171.046-.35.068-.532.083-.284.012-.569.006-.85-.046-.432 1.954.91 3.75 2.951 4.223-1.631 1.277-3.682 2.04-5.882 2.04-.379 0-.753-.022-1.124-.067 2.109 1.354 4.618 2.15 7.298 2.15 8.765 0 13.555-7.265 13.555-13.555 0-.207-.005-.412-.014-.617.932-.67 1.74-1.513 2.383-2.47z"/></svg>
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Facebook">
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors" aria-label="Instagram">
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664-4.771 4.919-4.919 1.266-.057 1.644-.07 4.85-.07zm0-2.163c-3.273 0-3.662.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.285-.073 1.673-.073 4.947s.014 3.661.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.285.059 1.673.073 4.947.073s3.661-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.059-1.285.073-1.673.073-4.947s-.014-3.661-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98-1.285-.059-1.673-.073-4.947-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.441 1.441 1.441 1.441-.645 1.441-1.441-.645-1.44-1.441-1.44z"/></svg>
+            </a>
           </div>
         </div>
       </div>
-      <div className="text-center text-gray-500 mt-8 border-t border-gray-700 pt-6">
+      <div className="text-center text-gray-500 mt-8 border-t border-gray-700 pt-6 px-8 text-sm">
         © {new Date().getFullYear()} OPEN-GATE. All Rights Reserved.
       </div>
     </footer>
   );
 };
 
+// --- FormField Component for Login/Register pages ---
+const FormField = ({ id, label, type, value, onChange, placeholder }) => (
+  <div>
+    <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>
+    <input
+      type={type}
+      id={id}
+      name={id}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition"
+      required
+    />
+  </div>
+);
 
-// --- Page Components ----------------------------------------------------
+// --- Accordion Item for FAQ page ---
+const AccordionItem = ({ question, answer }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className="border-b">
+      <button
+        className="w-full flex justify-between items-center text-left py-4 px-2"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className="font-semibold text-lg text-gray-800">{question}</span>
+        <span className="text-blue-600 transition-transform duration-300" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+        </span>
+      </button>
+      {isOpen && (
+        <div className="px-2 pb-4 text-gray-600 leading-relaxed">
+          {answer}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ===================================================================================
+// 4. FULL PAGE COMPONENTS
+// ===================================================================================
 
 // --- Home Page ---
 const Home = () => {
-  // Sample data - replace with data from your API
-  const featuredProducts = [
-    { id: 1, name: 'Handcrafted Wooden Chair', price: '$120', image: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?w=500' },
-    { id: 2, name: 'Vintage Leather Jacket', price: '$85', image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500' },
-    { id: 3, name: 'Ceramic Plant Pot', price: '$45', image: 'https://images.unsplash.com/photo-1591143222389-985145b051b4?w=500' },
-    { id: 4, name: 'Abstract Canvas Art', price: '$250', image: 'https://images.unsplash.com/photo-1506806732259-39c2d0268443?w=500' },
-  ];
-
-  const testimonials = [
-    { quote: "I found the most unique vintage jacket on OPEN-GATE! The process was so simple.", author: "Alex Johnson" },
-    { quote: "A fantastic platform for discovering new artisans. Highly recommended!", author: "Maria Garcia" },
-  ];
-
   return (
     <div className="bg-white">
       {/* Hero Section */}
-      <div className="text-center py-20 px-6 bg-gradient-to-br from-sky-100 to-white">
+      <section className="text-center py-20 px-6 bg-gradient-to-br from-sky-100 to-white">
         <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-gray-800">Welcome to OPEN-GATE</h1>
         <p className="text-lg md:text-xl mb-8 text-gray-600">The marketplace for unique, handcrafted, and sustainable goods.</p>
-        <Link to="/register" className="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold text-lg hover:bg-blue-700 transition duration-300">
+        <Link to="/register" className="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold text-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105">
           Get Started
         </Link>
-      </div>
+      </section>
 
       {/* How It Works Section */}
       <section className="py-16 bg-gray-50">
@@ -115,15 +208,15 @@ const Home = () => {
       {/* Featured Products Section */}
       <section className="py-16">
         <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">Featured Products</h2>
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-4">
-          {featuredProducts.map(product => (
-            <div key={product.id} className="border rounded-xl shadow-lg overflow-hidden transition-transform transform hover:-translate-y-2 cursor-pointer">
-              <Link to={`/product/${product.id}`}>
-                <img src={product.image} alt={product.name} className="w-full h-48 object-cover" />
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
+          {AppData.products.slice(0, 3).map(product => (
+            <div key={product.id} className="border rounded-xl shadow-lg overflow-hidden transition-transform transform hover:-translate-y-2">
+              <Link to={`/product/${product.slug}`}>
+                <img src={product.image} alt={product.name} className="w-full h-64 object-cover" />
                 <div className="p-4">
                   <h3 className="font-semibold text-lg text-gray-900">{product.name}</h3>
-                  <p className="text-gray-700 mt-1">{product.price}</p>
-                  <span className="text-blue-600 hover:underline mt-2 inline-block">View Details</span>
+                  <p className="text-gray-700 mt-1">${product.price.toFixed(2)}</p>
+                  <span className="text-blue-600 hover:underline mt-2 inline-block font-semibold">View Details</span>
                 </div>
               </Link>
             </div>
@@ -135,9 +228,9 @@ const Home = () => {
       <section className="py-16 bg-blue-50">
         <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">What Our Clients Say</h2>
         <div className="max-w-4xl mx-auto space-y-8 px-4">
-          {testimonials.map((testimonial, index) => (
+          {AppData.testimonials.map((testimonial, index) => (
             <div key={index} className="bg-white p-6 rounded-lg shadow-md">
-              <p className="text-gray-600 italic">"{testimonial.quote}"</p>
+              <p className="text-gray-600 italic text-lg">"{testimonial.quote}"</p>
               <p className="text-right font-semibold text-gray-800 mt-4">- {testimonial.author}</p>
             </div>
           ))}
@@ -150,28 +243,28 @@ const Home = () => {
 
 // --- About Page ---
 const About = () => (
-    <div className="max-w-4xl mx-auto p-8">
+    <div className="max-w-4xl mx-auto p-8 bg-white my-10 rounded-lg shadow-md">
         <h1 className="text-4xl font-bold mb-6 text-center text-gray-800">About OPEN-GATE</h1>
         <p className="text-lg text-gray-700 mb-6 leading-relaxed">
             OPEN-GATE was founded with a simple mission: to create a platform where creativity and opportunity meet. We believe in empowering small creators, artisans, and entrepreneurs by providing them with the tools they need to reach a global audience.
         </p>
         <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-            Our marketplace is a curated space for high-quality, unique, and sustainable products. We are more than just a platform; we are a community that values craftsmanship, authenticity, and connection.
+            Our marketplace is a curated space for high-quality, unique, and sustainable products. We are more than just a platform; we are a community that values craftsmanship, authenticity, and connection between the people who make things and those who appreciate them.
         </p>
-
+        <div className="w-full h-64 bg-cover bg-center rounded-lg my-8" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1000&q=80')" }}></div>
         <h2 className="text-3xl font-bold mb-4 text-center mt-12 text-gray-800">Our Values</h2>
         <div className="grid md:grid-cols-3 gap-8 text-center mt-8">
-            <div className="p-4">
+            <div className="p-4 border rounded-lg">
                 <h3 className="text-xl font-semibold">Empowerment</h3>
-                <p className="text-gray-600 mt-2">We provide the tools for creators to succeed.</p>
+                <p className="text-gray-600 mt-2">We provide the tools and platform for creators to turn their passion into a thriving business.</p>
             </div>
-            <div className="p-4">
-                <h3 className="text-xl font-semibold">Quality</h3>
-                <p className="text-gray-600 mt-2">We curate the best handcrafted and sustainable goods.</p>
+            <div className="p-4 border rounded-lg">
+                <h3 className="text-xl font-semibold">Quality & Curation</h3>
+                <p className="text-gray-600 mt-2">We curate the best handcrafted and sustainable goods, ensuring every item tells a story.</p>
             </div>
-            <div className="p-4">
+            <div className="p-4 border rounded-lg">
                 <h3 className="text-xl font-semibold">Community</h3>
-                <p className="text-gray-600 mt-2">We connect buyers and sellers who share common values.</p>
+                <p className="text-gray-600 mt-2">We connect buyers and sellers who share common values of sustainability and craftsmanship.</p>
             </div>
         </div>
     </div>
@@ -180,26 +273,26 @@ const About = () => (
 
 // --- Contact Page ---
 const Contact = () => (
-    <div className="max-w-3xl mx-auto p-8">
+    <div className="max-w-3xl mx-auto p-8 my-10">
         <h1 className="text-4xl font-bold mb-6 text-center text-gray-800">Contact Us</h1>
         <p className="text-lg text-center text-gray-700 mb-8">
-            Have a question or feedback? We'd love to hear from you.
+            Have a question or feedback? We'd love to hear from you. Fill out the form below or email us at <a href="mailto:support@open-gate.com" className="text-blue-600 hover:underline">support@open-gate.com</a>.
         </p>
         <form className="space-y-6 bg-white p-8 border rounded-lg shadow-md">
             <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-                <input type="text" id="name" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+                <input type="text" id="name" placeholder="Your Name" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
             </div>
             <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" id="email" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+                <input type="email" id="email" placeholder="you@example.com" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
             </div>
             <div>
                 <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message</label>
-                <textarea id="message" rows="4" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                <textarea id="message" rows="5" placeholder="Your message..." className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
             </div>
             <div className="text-center">
-                <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                <button type="submit" className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
                     Send Message
                 </button>
             </div>
@@ -207,73 +300,267 @@ const Contact = () => (
     </div>
 );
 
-// --- Blog Page ---
+// --- Blog List Page ---
 const Blog = () => (
   <div className="max-w-4xl mx-auto p-8">
-    <h1 className="text-4xl font-bold mb-6 text-center text-gray-800">Our Blog</h1>
-    <p className="text-lg text-center text-gray-700 mb-8">
+    <h1 className="text-4xl font-bold mb-4 text-center text-gray-800">Our Blog</h1>
+    <p className="text-lg text-center text-gray-700 mb-12">
       Tips, tutorials, and stories from our community of creators.
     </p>
-    {/* Placeholder for blog posts */}
     <div className="space-y-8">
-      <div className="p-6 border rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold mb-2">10 Tips for Caring for Your Handcrafted Furniture</h2>
-        <p className="text-gray-600">Learn how to make your unique pieces last a lifetime with these simple care instructions...</p>
-        <Link to="#" className="text-blue-600 hover:underline mt-4 inline-block">Read More</Link>
-      </div>
-      <div className="p-6 border rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold mb-2">Meet the Maker: An Interview with Jane Doe</h2>
-        <p className="text-gray-600">We sit down with ceramic artist Jane Doe to talk about her inspiration and creative process...</p>
-        <Link to="#" className="text-blue-600 hover:underline mt-4 inline-block">Read More</Link>
-      </div>
+      {AppData.blogPosts.map(post => (
+        <div key={post.slug} className="p-6 border rounded-lg shadow-md bg-white hover:shadow-xl transition-shadow">
+          <p className="text-sm text-gray-500">{post.date} by {post.author}</p>
+          <h2 className="text-2xl font-semibold mb-2 mt-1 text-gray-900">{post.title}</h2>
+          <p className="text-gray-600 leading-relaxed">{post.summary}</p>
+          <Link to={`/blog/${post.slug}`} className="text-blue-600 hover:underline mt-4 inline-block font-semibold">Read More &rarr;</Link>
+        </div>
+      ))}
     </div>
   </div>
 );
 
-// --- Placeholder Pages ---
-const Login = () => <div className="text-center p-10"><h1 className="text-3xl font-bold">Login Page</h1><p>Login form will be here.</p></div>;
-const Register = () => <div className="text-center p-10"><h1 className="text-3xl font-bold">Register Page</h1><p>Registration form will be here.</p></div>;
-const Dashboard = () => <div className="text-center p-10"><h1 className="text-3xl font-bold">User Dashboard</h1><p>User-specific content (orders, profile) will be here.</p></div>;
-const AdminPanel = () => <div className="text-center p-10"><h1 className="text-3xl font-bold">Admin Panel</h1><p>Admin-only tools will be here.</p></div>;
+// --- Single Blog Post Page ---
+const BlogPost = () => {
+    const { slug } = useParams();
+    const post = AppData.blogPosts.find(p => p.slug === slug);
 
-// --- Dynamic Product Page ---
-const Product = () => {
-  const { id } = useParams(); // Get the product ID from the URL
+    if (!post) {
+        return <div className="text-center p-10"><h1 className="text-3xl font-bold">404 - Post Not Found</h1></div>;
+    }
+
+    return (
+        <div className="max-w-3xl mx-auto p-8 bg-white my-10 rounded-lg shadow-md">
+            <h1 className="text-4xl font-bold mb-2 text-gray-900">{post.title}</h1>
+            <p className="text-md text-gray-500 mb-6">By {post.author} on {post.date}</p>
+            <div className="prose lg:prose-xl text-gray-700 leading-relaxed">
+                {post.content}
+            </div>
+            <Link to="/blog" className="text-blue-600 hover:underline mt-8 inline-block">&larr; Back to Blog</Link>
+        </div>
+    );
+};
+
+
+// --- Login Page ---
+const Login = () => {
+  const [formData, setFormData] = useState({ email: '', password: '' });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle login logic here
+    alert(`Logging in with Email: ${formData.email}`);
+  };
+
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-3xl font-bold">Product Details Page</h1>
-      <p className="mt-4 text-lg">You are viewing product with ID: <span className="font-semibold text-blue-600">{id}</span></p>
-      <p className="mt-2">A detailed product description, images, reviews, and an "Add to Cart" button will go here.</p>
+    <div className="max-w-md mx-auto p-8 my-10">
+      <h1 className="text-4xl font-bold mb-6 text-center text-gray-800">Login</h1>
+      <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 border rounded-lg shadow-md">
+        <FormField id="email" label="Email" type="email" value={formData.email} onChange={handleChange} placeholder="you@example.com" />
+        <FormField id="password" label="Password" type="password" value={formData.password} onChange={handleChange} placeholder="••••••••" />
+        <div className="flex items-center justify-between">
+            <a href="#" className="text-sm text-blue-600 hover:underline">Forgot password?</a>
+        </div>
+        <div>
+          <button type="submit" className="w-full bg-blue-600 text-white py-2 px-4 rounded-md font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+            Sign In
+          </button>
+        </div>
+        <p className="text-sm text-center text-gray-600">
+            Don't have an account? <Link to="/register" className="font-medium text-blue-600 hover:underline">Register here</Link>
+        </p>
+      </form>
     </div>
   );
 };
 
-// --- Main App Component --------------------------------------------------
+
+// --- Register Page ---
+const Register = () => {
+  const [formData, setFormData] = useState({ fullName: '', email: '', password: '', confirmPassword: '' });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+        alert("Passwords do not match!");
+        return;
+    }
+    // Handle registration logic here
+    alert(`Registering user: ${formData.fullName}`);
+  };
+  
+  return (
+    <div className="max-w-md mx-auto p-8 my-10">
+      <h1 className="text-4xl font-bold mb-6 text-center text-gray-800">Create an Account</h1>
+      <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 border rounded-lg shadow-md">
+        <FormField id="fullName" label="Full Name" type="text" value={formData.fullName} onChange={handleChange} placeholder="Your Full Name" />
+        <FormField id="email" label="Email" type="email" value={formData.email} onChange={handleChange} placeholder="you@example.com" />
+        <FormField id="password" label="Password" type="password" value={formData.password} onChange={handleChange} placeholder="Minimum 8 characters" />
+        <FormField id="confirmPassword" label="Confirm Password" type="password" value={formData.confirmPassword} onChange={handleChange} placeholder="Re-enter your password" />
+        <div>
+          <button type="submit" className="w-full bg-green-500 text-white py-2 px-4 rounded-md font-semibold hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+            Register
+          </button>
+        </div>
+        <p className="text-sm text-center text-gray-600">
+            Already have an account? <Link to="/login" className="font-medium text-blue-600 hover:underline">Log in</Link>
+        </p>
+      </form>
+    </div>
+  );
+};
+
+
+// --- Dynamic Product Page ---
+const Product = () => {
+  const { slug } = useParams();
+  const product = AppData.products.find(p => p.slug === slug);
+
+  if (!product) {
+    return <div className="text-center p-10"><h1 className="text-3xl font-bold">404 - Product Not Found</h1></div>;
+  }
+  
+  return (
+    <div className="max-w-5xl mx-auto p-8 my-10">
+      <div className="grid md:grid-cols-2 gap-8 bg-white p-8 rounded-lg shadow-md">
+        <div>
+          <img src={product.image} alt={product.name} className="w-full h-auto object-cover rounded-lg shadow-lg" />
+        </div>
+        <div>
+          <h1 className="text-4xl font-bold text-gray-900">{product.name}</h1>
+          <p className="text-3xl text-blue-600 font-semibold my-4">${product.price.toFixed(2)}</p>
+          <p className="text-gray-700 leading-relaxed mb-6">{product.description}</p>
+          <div className="flex items-center space-x-4">
+            <button className="flex-grow bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- FAQ Page ---
+const FAQ = () => (
+    <div className="max-w-3xl mx-auto p-8 my-10">
+        <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">Frequently Asked Questions</h1>
+        <div className="space-y-4 bg-white p-8 border rounded-lg shadow-md">
+            {AppData.faqData.map((item, index) => (
+                <AccordionItem key={index} question={item.question} answer={item.answer} />
+            ))}
+        </div>
+    </div>
+);
+
+// --- Privacy Policy Page ---
+const PrivacyPolicy = () => (
+    <div className="max-w-3xl mx-auto p-8 bg-white my-10 rounded-lg shadow-md prose lg:prose-lg">
+        <h1>Privacy Policy for OPEN-GATE</h1>
+        <p><strong>Last Updated:</strong> August 6, 2025</p>
+
+        <h2>1. Introduction</h2>
+        <p>Welcome to OPEN-GATE. We are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.</p>
+
+        <h2>2. Information We Collect</h2>
+        <p>We may collect information about you in a variety of ways. The information we may collect on the Site includes:</p>
+        <ul>
+            <li><strong>Personal Data:</strong> Personally identifiable information, such as your name, shipping address, email address, and telephone number, that you voluntarily give to us when you register with the Site or when you choose to participate in various activities related to the Site, such as online chat and message boards.</li>
+            <li><strong>Derivative Data:</strong> Information our servers automatically collect when you access the Site, such as your IP address, your browser type, your operating system, your access times, and the pages you have viewed directly before and after accessing the Site.</li>
+        </ul>
+
+        <h2>3. Use of Your Information</h2>
+        <p>Having accurate information about you permits us to provide you with a smooth, efficient, and customized experience. Specifically, we may use information collected about you via the Site to: create and manage your account, process your transactions, and deliver products and services to you.</p>
+
+        <h2>4. Disclosure of Your Information</h2>
+        <p>We may share information we have collected about you in certain situations. Your information may be disclosed as follows: by law or to protect rights, or to third-party service providers who perform services for us or on our behalf, including payment processing, data analysis, email delivery, hosting services, customer service, and marketing assistance.</p>
+        
+        <h2>5. Security of Your Information</h2>
+        <p>We use administrative, technical, and physical security measures to help protect your personal information. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable.</p>
+    </div>
+);
+
+// --- Terms of Service Page ---
+const TermsOfService = () => (
+    <div className="max-w-3xl mx-auto p-8 bg-white my-10 rounded-lg shadow-md prose lg:prose-lg">
+        <h1>Terms of Service for OPEN-GATE</h1>
+        <p><strong>Last Updated:</strong> August 6, 2025</p>
+
+        <h2>1. Agreement to Terms</h2>
+        <p>By using our services, you agree to be bound by these Terms. If you don’t agree to be bound by these Terms, do not use the services.</p>
+
+        <h2>2. User Accounts</h2>
+        <p>When you create an account with us, you must provide us information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account on our service.</p>
+
+        <h2>3. Prohibited Activities</h2>
+        <p>You may not access or use the Site for any purpose other than that for which we make the Site available. The Site may not be used in connection with any commercial endeavors except those that are specifically endorsed or approved by us.</p>
+        
+        <h2>4. Intellectual Property Rights</h2>
+        <p>The Site and its original content, features, and functionality are and will remain the exclusive property of OPEN-GATE and its licensors. The Service is protected by copyright, trademark, and other laws of both the United States and foreign countries.</p>
+
+        <h2>5. Termination</h2>
+        <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.</p>
+    </div>
+);
+
+// --- Placeholder Pages ---
+const Dashboard = () => <div className="text-center p-10"><h1 className="text-3xl font-bold">User Dashboard</h1><p>User-specific content (orders, profile) will be here.</p></div>;
+const AdminPanel = () => <div className="text-center p-10"><h1 className="text-3xl font-bold">Admin Panel</h1><p>Admin-only tools will be here.</p></div>;
+
+
+// ===================================================================================
+// 5. MAIN APPLICATION COMPONENT & ROUTER CONFIGURATION
+// ===================================================================================
 
 export default function App() {
   return (
     <Router>
       <div className="flex flex-col min-h-screen bg-gray-50">
+        <ScrollToTop /> {/* Add this component to handle scroll position */}
         <Navbar />
         <main className="flex-grow">
           <Routes>
+            {/* Core Pages */}
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            
+            {/* Blog Pages */}
             <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+
+            {/* Authentication Pages */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            
+            {/* E-commerce & User Pages */}
+            <Route path="/product/:slug" element={<Product />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/product/:id" element={<Product />} />
+            
+            {/* Admin Pages */}
             <Route path="/admin" element={<AdminPanel />} />
-            {/* Add placeholder routes for footer links */}
-            <Route path="/faq" element={<div className="text-center p-10"><h1 className="text-3xl font-bold">FAQ Page</h1></div>} />
-            <Route path="/privacy-policy" element={<div className="text-center p-10"><h1 className="text-3xl font-bold">Privacy Policy</h1></div>} />
-            <Route path="/terms-of-service" element={<div className="text-center p-10"><h1 className="text-3xl font-bold">Terms of Service</h1></div>} />
+            
+            {/* Footer & Legal Pages */}
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+
+            {/* Fallback Route for 404 Not Found */}
+            <Route path="*" element={<div className="text-center p-20"><h1 className="text-4xl font-bold">404 - Page Not Found</h1></div>} />
           </Routes>
         </main>
         <Footer />
       </div>
     </Router>
   );
-}```
+}
