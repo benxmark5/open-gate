@@ -1,0 +1,279 @@
+// OPEN-GATE APP - Full Combined Code
+// Tech: React + React Router + Tailwind CSS
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom';
+
+// --- Reusable Layout Components -------------------------------------------
+
+const Navbar = () => {
+  return (
+    <nav className="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-50">
+      <Link to="/" className="text-2xl font-bold text-blue-600">OPEN-GATE</Link>
+      <div className="hidden md:flex space-x-6">
+        <Link to="/" className="text-gray-700 hover:text-blue-600">Home</Link>
+        <Link to="/about" className="text-gray-700 hover:text-blue-600">About Us</Link>
+        <Link to="/blog" className="text-gray-700 hover:text-blue-600">Blog</Link>
+        <Link to="/contact" className="text-gray-700 hover:text-blue-600">Contact</Link>
+      </div>
+      <div className="space-x-4">
+        <Link to="/login" className="bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600 transition-colors">Login</Link>
+        <Link to="/register" className="bg-green-500 text-white px-4 py-2 rounded-xl hover:bg-green-600 transition-colors">Register</Link>
+      </div>
+    </nav>
+  );
+};
+
+const Footer = () => {
+  return (
+    <footer className="bg-gray-800 text-white p-10 mt-auto">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h3 className="font-bold text-lg mb-2">OPEN-GATE</h3>
+          <p className="text-gray-400">Your one-stop platform for unique finds and great opportunities.</p>
+        </div>
+        <div>
+          <h3 className="font-bold text-lg mb-2">Quick Links</h3>
+          <ul>
+            <li><Link to="/about" className="text-gray-400 hover:text-white hover:underline">About Us</Link></li>
+            <li><Link to="/contact" className="text-gray-400 hover:text-white hover:underline">Contact</Link></li>
+            <li><Link to="/faq" className="text-gray-400 hover:text-white hover:underline">FAQ</Link></li>
+          </ul>
+        </div>
+        <div>
+          <h3 className="font-bold text-lg mb-2">Legal</h3>
+          <ul>
+            <li><Link to="/privacy-policy" className="text-gray-400 hover:text-white hover:underline">Privacy Policy</Link></li>
+            <li><Link to="/terms-of-service" className="text-gray-400 hover:text-white hover:underline">Terms of Service</Link></li>
+          </ul>
+        </div>
+        <div>
+          <h3 className="font-bold text-lg mb-2">Follow Us</h3>
+          <div className="flex space-x-4">
+             {/* In a real app, these would be icons */}
+            <a href="#" className="text-gray-400 hover:text-white">Twitter</a>
+            <a href="#" className="text-gray-400 hover:text-white">Facebook</a>
+            <a href="#" className="text-gray-400 hover:text-white">Instagram</a>
+          </div>
+        </div>
+      </div>
+      <div className="text-center text-gray-500 mt-8 border-t border-gray-700 pt-6">
+        © {new Date().getFullYear()} OPEN-GATE. All Rights Reserved.
+      </div>
+    </footer>
+  );
+};
+
+
+// --- Page Components ----------------------------------------------------
+
+// --- Home Page ---
+const Home = () => {
+  // Sample data - replace with data from your API
+  const featuredProducts = [
+    { id: 1, name: 'Handcrafted Wooden Chair', price: '$120', image: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?w=500' },
+    { id: 2, name: 'Vintage Leather Jacket', price: '$85', image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500' },
+    { id: 3, name: 'Ceramic Plant Pot', price: '$45', image: 'https://images.unsplash.com/photo-1591143222389-985145b051b4?w=500' },
+    { id: 4, name: 'Abstract Canvas Art', price: '$250', image: 'https://images.unsplash.com/photo-1506806732259-39c2d0268443?w=500' },
+  ];
+
+  const testimonials = [
+    { quote: "I found the most unique vintage jacket on OPEN-GATE! The process was so simple.", author: "Alex Johnson" },
+    { quote: "A fantastic platform for discovering new artisans. Highly recommended!", author: "Maria Garcia" },
+  ];
+
+  return (
+    <div className="bg-white">
+      {/* Hero Section */}
+      <div className="text-center py-20 px-6 bg-gradient-to-br from-sky-100 to-white">
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-gray-800">Welcome to OPEN-GATE</h1>
+        <p className="text-lg md:text-xl mb-8 text-gray-600">The marketplace for unique, handcrafted, and sustainable goods.</p>
+        <Link to="/register" className="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold text-lg hover:bg-blue-700 transition duration-300">
+          Get Started
+        </Link>
+      </div>
+
+      {/* How It Works Section */}
+      <section className="py-16 bg-gray-50">
+        <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">How It Works</h2>
+        <div className="max-w-5xl mx-auto grid md:grid-cols-3 gap-8 text-center px-4">
+          <div className="p-6">
+            <h3 className="text-xl font-semibold mb-2">1. Discover Products</h3>
+            <p className="text-gray-600">Browse thousands of unique items from creators around the world.</p>
+          </div>
+          <div className="p-6">
+            <h3 className="text-xl font-semibold mb-2">2. Secure Purchase</h3>
+            <p className="text-gray-600">Add items to your cart and check out with our secure payment system.</p>
+          </div>
+          <div className="p-6">
+            <h3 className="text-xl font-semibold mb-2">3. Receive Your Order</h3>
+            <p className="text-gray-600">Get your order delivered right to your doorstep. It's that easy!</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Products Section */}
+      <section className="py-16">
+        <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">Featured Products</h2>
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-4">
+          {featuredProducts.map(product => (
+            <div key={product.id} className="border rounded-xl shadow-lg overflow-hidden transition-transform transform hover:-translate-y-2 cursor-pointer">
+              <Link to={`/product/${product.id}`}>
+                <img src={product.image} alt={product.name} className="w-full h-48 object-cover" />
+                <div className="p-4">
+                  <h3 className="font-semibold text-lg text-gray-900">{product.name}</h3>
+                  <p className="text-gray-700 mt-1">{product.price}</p>
+                  <span className="text-blue-600 hover:underline mt-2 inline-block">View Details</span>
+                </div>
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-16 bg-blue-50">
+        <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">What Our Clients Say</h2>
+        <div className="max-w-4xl mx-auto space-y-8 px-4">
+          {testimonials.map((testimonial, index) => (
+            <div key={index} className="bg-white p-6 rounded-lg shadow-md">
+              <p className="text-gray-600 italic">"{testimonial.quote}"</p>
+              <p className="text-right font-semibold text-gray-800 mt-4">- {testimonial.author}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+};
+
+
+// --- About Page ---
+const About = () => (
+    <div className="max-w-4xl mx-auto p-8">
+        <h1 className="text-4xl font-bold mb-6 text-center text-gray-800">About OPEN-GATE</h1>
+        <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+            OPEN-GATE was founded with a simple mission: to create a platform where creativity and opportunity meet. We believe in empowering small creators, artisans, and entrepreneurs by providing them with the tools they need to reach a global audience.
+        </p>
+        <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+            Our marketplace is a curated space for high-quality, unique, and sustainable products. We are more than just a platform; we are a community that values craftsmanship, authenticity, and connection.
+        </p>
+
+        <h2 className="text-3xl font-bold mb-4 text-center mt-12 text-gray-800">Our Values</h2>
+        <div className="grid md:grid-cols-3 gap-8 text-center mt-8">
+            <div className="p-4">
+                <h3 className="text-xl font-semibold">Empowerment</h3>
+                <p className="text-gray-600 mt-2">We provide the tools for creators to succeed.</p>
+            </div>
+            <div className="p-4">
+                <h3 className="text-xl font-semibold">Quality</h3>
+                <p className="text-gray-600 mt-2">We curate the best handcrafted and sustainable goods.</p>
+            </div>
+            <div className="p-4">
+                <h3 className="text-xl font-semibold">Community</h3>
+                <p className="text-gray-600 mt-2">We connect buyers and sellers who share common values.</p>
+            </div>
+        </div>
+    </div>
+);
+
+
+// --- Contact Page ---
+const Contact = () => (
+    <div className="max-w-3xl mx-auto p-8">
+        <h1 className="text-4xl font-bold mb-6 text-center text-gray-800">Contact Us</h1>
+        <p className="text-lg text-center text-gray-700 mb-8">
+            Have a question or feedback? We'd love to hear from you.
+        </p>
+        <form className="space-y-6 bg-white p-8 border rounded-lg shadow-md">
+            <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                <input type="text" id="name" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+            </div>
+            <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" id="email" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
+            </div>
+            <div>
+                <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message</label>
+                <textarea id="message" rows="4" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+            </div>
+            <div className="text-center">
+                <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                    Send Message
+                </button>
+            </div>
+        </form>
+    </div>
+);
+
+// --- Blog Page ---
+const Blog = () => (
+  <div className="max-w-4xl mx-auto p-8">
+    <h1 className="text-4xl font-bold mb-6 text-center text-gray-800">Our Blog</h1>
+    <p className="text-lg text-center text-gray-700 mb-8">
+      Tips, tutorials, and stories from our community of creators.
+    </p>
+    {/* Placeholder for blog posts */}
+    <div className="space-y-8">
+      <div className="p-6 border rounded-lg shadow-md">
+        <h2 className="text-2xl font-semibold mb-2">10 Tips for Caring for Your Handcrafted Furniture</h2>
+        <p className="text-gray-600">Learn how to make your unique pieces last a lifetime with these simple care instructions...</p>
+        <Link to="#" className="text-blue-600 hover:underline mt-4 inline-block">Read More</Link>
+      </div>
+      <div className="p-6 border rounded-lg shadow-md">
+        <h2 className="text-2xl font-semibold mb-2">Meet the Maker: An Interview with Jane Doe</h2>
+        <p className="text-gray-600">We sit down with ceramic artist Jane Doe to talk about her inspiration and creative process...</p>
+        <Link to="#" className="text-blue-600 hover:underline mt-4 inline-block">Read More</Link>
+      </div>
+    </div>
+  </div>
+);
+
+// --- Placeholder Pages ---
+const Login = () => <div className="text-center p-10"><h1 className="text-3xl font-bold">Login Page</h1><p>Login form will be here.</p></div>;
+const Register = () => <div className="text-center p-10"><h1 className="text-3xl font-bold">Register Page</h1><p>Registration form will be here.</p></div>;
+const Dashboard = () => <div className="text-center p-10"><h1 className="text-3xl font-bold">User Dashboard</h1><p>User-specific content (orders, profile) will be here.</p></div>;
+const AdminPanel = () => <div className="text-center p-10"><h1 className="text-3xl font-bold">Admin Panel</h1><p>Admin-only tools will be here.</p></div>;
+
+// --- Dynamic Product Page ---
+const Product = () => {
+  const { id } = useParams(); // Get the product ID from the URL
+  return (
+    <div className="max-w-4xl mx-auto p-8">
+      <h1 className="text-3xl font-bold">Product Details Page</h1>
+      <p className="mt-4 text-lg">You are viewing product with ID: <span className="font-semibold text-blue-600">{id}</span></p>
+      <p className="mt-2">A detailed product description, images, reviews, and an "Add to Cart" button will go here.</p>
+    </div>
+  );
+};
+
+// --- Main App Component --------------------------------------------------
+
+export default function App() {
+  return (
+    <Router>
+      <div className="flex flex-col min-h-screen bg-gray-50">
+        <Navbar />
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/product/:id" element={<Product />} />
+            <Route path="/admin" element={<AdminPanel />} />
+            {/* Add placeholder routes for footer links */}
+            <Route path="/faq" element={<div className="text-center p-10"><h1 className="text-3xl font-bold">FAQ Page</h1></div>} />
+            <Route path="/privacy-policy" element={<div className="text-center p-10"><h1 className="text-3xl font-bold">Privacy Policy</h1></div>} />
+            <Route path="/terms-of-service" element={<div className="text-center p-10"><h1 className="text-3xl font-bold">Terms of Service</h1></div>} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </Router>
+  );
+}```
